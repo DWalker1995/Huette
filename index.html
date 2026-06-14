@@ -1929,15 +1929,15 @@ let sfSearching = false;
 
 function sfSetLoading(msg) {
   document.getElementById('sf-results-area').innerHTML =
-    `<div class="sf-loading"><div class="load-spinner"></div>\${msg}</div>\`;
+    `<div class="sf-loading"><div class="load-spinner"></div>${msg}</div>`;
 }
 
 function sfSetError(msg) {
   document.getElementById('sf-results-area').innerHTML =
-    \`<div class="sf-empty">
+    `<div class="sf-empty">
        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-       \${msg}
-     </div>\`;
+       ${msg}
+     </div>`;
 }
 
 async function sfSearch() {
@@ -1979,7 +1979,7 @@ async function sfSearch() {
     const radius = parseInt(document.getElementById('sf-radius').value);
     const sort = document.getElementById('sf-sort').value;
 
-    sfSetLoading(\`Finding \${retailer} stores near you…\`);
+    sfSetLoading(`Finding ${retailer} stores near you…`);
     await sfFetchStores(retailer, category, radius, sort, sfUserLat, sfUserLng);
 
   } catch (err) {
@@ -2000,14 +2000,14 @@ async function sfSearch() {
 }
 
 async function sfFetchStores(retailer, category, radius, sort, lat, lng) {
-  const prompt = \`You are a local shopping assistant. A user at coordinates \${lat.toFixed(4)}, \${lng.toFixed(4)} is looking for "\${retailer}" \${category !== 'clothing store' ? '(' + category + ')' : ''} stores within \${radius} miles.
+  const prompt = `You are a local shopping assistant. A user at coordinates ${lat.toFixed(4)}, ${lng.toFixed(4)} is looking for "${retailer}" ${category !== 'clothing store' ? '(' + category + ')' : ''} stores within ${radius} miles.
 
-Figure out what city/neighborhood this coordinate is in, then generate a realistic list of 6 store locations for "\${retailer}" in that area. Make the addresses, neighborhoods, and distances realistic and plausible for that specific city. Vary the neighborhoods.
+Figure out what city/neighborhood this coordinate is in, then generate a realistic list of 6 store locations for "${retailer}" in that area. Make the addresses, neighborhoods, and distances realistic and plausible for that specific city. Vary the neighborhoods.
 
 Return ONLY valid JSON (no markdown, no backticks):
 [
   {
-    "name": "Store name with neighborhood e.g. \${retailer} - Downtown",
+    "name": "Store name with neighborhood e.g. ${retailer} - Downtown",
     "address": "Full realistic street address, City, State ZIP",
     "neighborhood": "Neighborhood or area name",
     "distance_miles": 0.8,
@@ -2017,7 +2017,7 @@ Return ONLY valid JSON (no markdown, no backticks):
   }
 ]
 
-Sort by distance_miles ascending. All within \${radius} miles. Make distance_miles a realistic float. Make phone numbers plausible for the area.\`;
+Sort by distance_miles ascending. All within ${radius} miles. Make distance_miles a realistic float. Make phone numbers plausible for the area.`;
 
   try {
     const res = await fetch(API_ENDPOINT, {
@@ -2027,7 +2027,7 @@ Sort by distance_miles ascending. All within \${radius} miles. Make distance_mil
     });
     const data = await res.json();
     const raw = (data.content || []).map(i => i.text || '').join('');
-    const clean = raw.replace(/\`\`\`json|\`\`\`/g, '').trim();
+    const clean = raw.replace(/```json|```/g, '').trim();
     let stores = JSON.parse(clean);
 
     // Sort if user wants open-first
@@ -2041,64 +2041,64 @@ Sort by distance_miles ascending. All within \${radius} miles. Make distance_mil
 
 function sfRenderStores(stores, retailer, lat, lng) {
   const area = document.getElementById('sf-results-area');
-  const mapsSearchUrl = \`https://www.google.com/maps/search/\${encodeURIComponent(retailer + ' near me')}/@\${lat},\${lng},13z\`;
+  const mapsSearchUrl = `https://www.google.com/maps/search/${encodeURIComponent(retailer + ' near me')}/@${lat},${lng},13z`;
 
   if (!stores || !stores.length) {
-    area.innerHTML = \`<div class="sf-empty">
+    area.innerHTML = `<div class="sf-empty">
       <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-      No \${retailer} stores found nearby. Try a wider radius or different spelling.
+      No ${retailer} stores found nearby. Try a wider radius or different spelling.
     </div>
-    <a class="sf-gmaps-banner" href="\${mapsSearchUrl}" target="_blank" rel="noopener">
+    <a class="sf-gmaps-banner" href="${mapsSearchUrl}" target="_blank" rel="noopener">
       <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      Search "\${retailer}" on Google Maps
-    </a>\`;
+      Search "${retailer}" on Google Maps
+    </a>`;
     return;
   }
 
   const cards = stores.map((s, i) => {
-    const dirUrl = \`https://www.google.com/maps/dir/?api=1&destination=\${encodeURIComponent(s.address)}&origin=\${lat},\${lng}\`;
-    const mapUrl = \`https://www.google.com/maps/search/\${encodeURIComponent(s.name + ' ' + s.address)}\`;
+    const dirUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(s.address)}&origin=${lat},${lng}`;
+    const mapUrl = `https://www.google.com/maps/search/${encodeURIComponent(s.name + ' ' + s.address)}`;
     const openClass = s.open_now ? 'open' : 'closed';
     const openText = s.open_now ? '● Open now' : '● Closed';
     const dist = typeof s.distance_miles === 'number' ? s.distance_miles.toFixed(1) + ' mi' : s.distance_miles;
-    return \`
+    return `
     <div class="sf-store-card">
-      <div class="sf-store-num">\${i + 1}</div>
+      <div class="sf-store-num">${i + 1}</div>
       <div class="sf-store-info">
-        <div class="sf-store-name">\${s.name}</div>
-        <div class="sf-store-addr">\${s.address}</div>
+        <div class="sf-store-name">${s.name}</div>
+        <div class="sf-store-addr">${s.address}</div>
         <div class="sf-store-meta">
-          <span class="sf-store-dist">📍 \${dist}</span>
-          <span class="sf-store-open \${openClass}">\${openText}</span>
-          \${s.hours_today ? \`<span class="sf-store-hours">\${s.hours_today}</span>\` : ''}
-          \${s.phone ? \`<span class="sf-store-hours">\${s.phone}</span>\` : ''}
+          <span class="sf-store-dist">📍 ${dist}</span>
+          <span class="sf-store-open ${openClass}">${openText}</span>
+          ${s.hours_today ? '<span class="sf-store-hours">' + s.hours_today + '</span>' : ''}
+          ${s.phone ? '<span class="sf-store-hours">' + s.phone + '</span>' : ''}
         </div>
       </div>
       <div class="sf-store-actions">
-        <a class="sf-dir-btn" href="\${dirUrl}" target="_blank" rel="noopener">
+        <a class="sf-dir-btn" href="${dirUrl}" target="_blank" rel="noopener">
           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
           Directions
         </a>
-        <a class="sf-map-link" href="\${mapUrl}" target="_blank" rel="noopener">
+        <a class="sf-map-link" href="${mapUrl}" target="_blank" rel="noopener">
           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
           Map
         </a>
       </div>
-    </div>\`;
+    </div>`;
   }).join('');
 
-  area.innerHTML = \`
+  area.innerHTML = `
     <div class="sf-results">
       <div class="sf-results-header">
-        <div class="sf-results-title">\${stores.length} \${retailer} stores found</div>
-        <div class="sf-results-count">within \${document.getElementById('sf-radius').value} miles</div>
+        <div class="sf-results-title">${stores.length} ${retailer} stores found</div>
+        <div class="sf-results-count">within ${document.getElementById('sf-radius').value} miles</div>
       </div>
-      \${cards}
-      <a class="sf-gmaps-banner" href="\${mapsSearchUrl}" target="_blank" rel="noopener">
+      ${cards}
+      <a class="sf-gmaps-banner" href="${mapsSearchUrl}" target="_blank" rel="noopener">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         View all on Google Maps
       </a>
-    </div>\`;
+    </div>`;
 }
 
 // Auto-trigger store search when a result card's "Find stores near me" is clicked
