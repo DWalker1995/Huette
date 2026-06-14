@@ -1,4 +1,4 @@
-# ChromaFit — Backend + Frontend
+# MyHuette — Backend + Frontend
 
 AI-powered clothing color search. This repo contains both the frontend (`public/index.html`) and a serverless API proxy (`api/claude.js`) that keeps your Anthropic API key secure on the server.
 
