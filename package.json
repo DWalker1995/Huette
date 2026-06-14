@@ -1,0 +1,16 @@
+{
+  "name": "huette-backend",
+  "version": "1.0.0",
+  "description": "Huette API proxy backend \u2014 keeps Anthropic API key server-side",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "devDependencies": {
+    "vercel": "^37.0.0"
+  }
+}
