@@ -1262,7 +1262,7 @@
   </div>
 </div>
 
-<footer>© 2026 <strong>Huette</strong> — AI-powered color-first fashion search · Built with ♥ for style lovers</footer>
+<footer>© 2026 <strong>Huette</strong> — AI-powered color-first fashion search · Built with ♥ for style lovers · <a href="/privacy.html" style="color:var(--accent);text-decoration:none">Privacy Policy</a></footer>
 
 <script>
 
@@ -1438,13 +1438,19 @@ Include 6 results. Prioritise exact matches; if exact shade is unavailable in th
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1000, messages })
     });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error('API ' + res.status + ': ' + (errData.error || res.statusText));
+    }
     const data = await res.json();
+    console.log('API response:', data);
     const raw = (data.content || []).map(i => i.text || '').join('');
     const clean = raw.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(clean);
     renderResults(parsed);
   } catch(e) {
-    showError('Something went wrong. Please try again in a moment.');
+    showError('Error: ' + (e?.message || e) + ' — Check browser console for details.');
+    console.error('Huette error:', e);
   }
 
   btn.disabled = false;
@@ -1474,7 +1480,7 @@ function renderResults(parsed) {
   const bannerHtml = (hasClosest || noneExact) ? `
     <div class="closest-match-banner">
       <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <span><strong>Closest available shown.</strong> ${parsed.closest_match_note || 'An exact match for this shade is hard to find right now — we've surfaced the nearest alternatives available in stores.'}</span>
+      <span><strong>Closest available shown.</strong> ${parsed.closest_match_note || 'An exact match for this shade is hard to find right now — we\'ve surfaced the nearest alternatives available in stores.'}</span>
     </div>` : '';
 
   // Inject banner before the grid
