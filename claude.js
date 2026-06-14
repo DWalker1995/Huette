@@ -4,14 +4,19 @@
 const ALLOWED_ORIGINS = [
   'https://myhuette.com',
   'https://www.myhuette.com',
-  // Keep localhost for local dev
+  'https://huette-beryl.vercel.app',
   'http://localhost:3000',
   'http://localhost:5173',
 ];
 
 export default async function handler(req, res) {
   const origin = req.headers.origin || '';
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+
+  // Allow all Vercel preview URLs for this project too
+  const isVercelPreview = origin.includes('huette') && origin.includes('vercel.app');
+  const isAllowed = ALLOWED_ORIGINS.includes(origin) || isVercelPreview;
+
+  const allowedOrigin = isAllowed ? origin : ALLOWED_ORIGINS[0];
 
   res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -28,7 +33,7 @@ export default async function handler(req, res) {
   }
 
   // Block requests from disallowed origins
-  if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+  if (origin && !isAllowed) {
     return res.status(403).json({ error: 'Forbidden' });
   }
 
