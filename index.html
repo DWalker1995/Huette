@@ -1266,8 +1266,9 @@
 
 <script>
 
-// API calls go through /api/claude on myhuette.com (backend proxy — key stays server-side)
-const API_ENDPOINT = '/api/claude';
+// Direct Anthropic API call from browser
+const API_ENDPOINT = 'https://api.anthropic.com/v1/messages';
+const ANTHROPIC_KEY = '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';
 
 function requireApiKey() { return true; } // Always true — key is on the server
 
@@ -1435,7 +1436,12 @@ Include 6 results. Prioritise exact matches; if exact shade is unavailable in th
   try {
     const res = await fetch(API_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1000, messages })
     });
     if (!res.ok) {
@@ -1560,7 +1566,12 @@ Always include the base color (${colorHex}) as the first entry in each "colors" 
   try {
     const res = await fetch(API_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 1000,
@@ -1676,7 +1687,12 @@ Include 8 best colors and 4 colors to avoid. Make hex values accurate. Be warm, 
   try {
     const res = await fetch(API_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 1200,
@@ -1856,7 +1872,12 @@ Return ONLY valid JSON (no markdown):
   try {
     const res = await fetch(API_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 700,
@@ -2022,7 +2043,12 @@ Sort by distance_miles ascending. All within ${radius} miles. Make distance_mile
   try {
     const res = await fetch(API_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 900, messages: [{ role: 'user', content: prompt }] })
     });
     const data = await res.json();
